@@ -1,3 +1,5 @@
+use std::usize;
+
 fn main() {
     println!("Hello, world!");
 
@@ -326,6 +328,79 @@ fn main() {
         // --> src/crates_unused_items.rs...
 
         // This warning can be puzzling, because there are two very different possible causes. Perhaps this function really is dead code at the moment. Or, maybe, you meant to use it in other crates. In that case, we'd need to mark it and all enclosing modules as public.
+
+
+
+    // Turning a Program into a Library
+
+    // As our fern simulator starts to take off, we decide we need more than a single program. Suppose we've got one command-line program that runs the simulation and saves results in a file. Now, we want to write other programs for performing scientific analysis of the saved results, displaying 3D renderings of the growing plants in real time, rendering photorealistic pictures, and so on. ALl these programs need to share the basic fern simulation code. We need to make a library.
+
+    // The first step is to factor our existing project into two parts. A library crate, which contains all the shared code, and an executable, which contains the code that's only needed for our existing command-line program.
+
+    // To show how we can do this, let's use a grossly simplified example program:
+    struct Fern {
+        size: f64,
+        growth_rate: f64
+    }
+
+    impl Fern {
+        /// Simulate a fern growing for one day
+        fn grow(&mut self) {
+            self.size *= 1.0 + self.growth_rate;
+        }
+    }
+
+    /// Run a fern simulation for some number of days.
+    fn run_simulation(fern: &mut Fern, days: usize) {
+        for _ in 0 .. days {
+            fern.grow();
+        }
+    }
+
+    fn main() {
+        let mut fern = Fern {
+            size: 1.0,
+            growth_rate: 0.001
+        };
+
+        run_simulation(&mut fern, 1000);
+        println!("final fern size: {}", fern.size);
+    }
+
+    // We'll assume that this program has a trivial Cargo.toml file:
+    [package]
+    name = "fern_sim"
+    version = "0.1.0"
+    authors = ["You <you@example.com>"]
+
+    // Turning this program into a library is easy. The steps are:
+    // 1. Rename the file src/main.rs to src/lib.rs
+    // 2. Add the pub keyword to items in src/lib.rs that will be public features of our library.
+    // 3. Move the main function to a temporary file somewhere. We'll expand on this in a minute.
+
+    // The resulting src/lib.rs file looks like this:
+    pub struct Fern {
+        pub size: f64,
+        pub growth_rate: f64
+    }
+
+    impl Fern {
+        /// Simulate a fern growing for one day.
+        pub fn grow(&mut self) {
+            self.size *= 1.0 + self.growth_rate;
+        }
+    }
+
+    /// Run a fern simulation for some number of days.
+    pub fn run_simulation(fern: &mut Fern, days: usize) {
+        for _ in 0 .. days {
+            fern.grow();
+        }
+    }
+
+    // We didn't need to change anything in Cargo.toml. This is because our minimal Cargo.toml files leaves Cargo to its default behaviour. By default, cargo build looks at the files in our source directory and figures out what to build. When it sees the file srd/lib.rs, it knows to build a library.
+
+    // The code in src/lib.rs forms the root module of the library. Other crates that use our library can only access the public items of this root module.
 
 
 
