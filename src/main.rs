@@ -61,5 +61,55 @@ fn main() {
 
 
 
+    // Modules
+
+    // Modules are Rust's namespaces. They're containers for the functions, types, constants, and so on that make up our Rust program or library. Whereas crates are about code sharing between projects, modules are about code organization within a project. They look like this:
+    mod spores {
+        use cells::Cell;
+
+        /// A cell made by and adult fern. It disperses on the wind as part of
+        /// the fern life cycle. A spore grows into a prothallus - a whole
+        /// separate organism, up to 5mm across -- which produces they zygote
+        /// that grows into a new fern. (Plant sex is complicated).
+        pub struct Spore {
+            ...
+        }
+
+        /// Simulate the production of a spore by meiosis.
+        pub fn produce_spore(factory: &mut Sporangium) -> Spore {
+            ...
+        }
+
+        /// Mix genes to prepare for meiosis (part of interphase).
+        fn recombine(parent: &mut Cell) {
+            ...
+        }
+
+        ...
+    }
+
+    // A module is a collection of items, named features like the Spore struct and the two functions in the above example. The pub keyword makes an item public, so it can be accessed from outside the module. Anything that isn't marked pub is private.
+    let s = spores::produce_spore(&mut factory); // ok
+    spres::recombine(&mut cell); // error: `recombine` is private
+
+    // Modules can next, and it's fairly common to see a module that's just a collection of submodules:
+    mod plant_structures {
+        pub mod roots {
+            ...
+        }
+
+        pub mod stems {
+            ...
+        }
+
+        pub mod leaves {
+            ...
+        }
+    }
+
+    // In this way, we could write out a whole program, with a huge amount of code and whole hierarchy of modules, all in a single source file. However working that way is difficult, so there's an alternative.
+
+
+
     
 }
