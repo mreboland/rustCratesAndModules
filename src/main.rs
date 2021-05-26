@@ -250,7 +250,87 @@ fn main() {
 
 
 
+    // Items, the Building Blocks of Rust
+
+    // A module is made up of items. There are several kinds of item, and the list is really a list of the language's major features:
+
+    // Functions
+        // We've seen a lot of these already
+
+    // Types
+        // User-defined types are introduced using the struct, enum, and trait keywords. They will be covered in more detail in subsequent chapters. A simple struct looks like so:
+        pub struct Fern {
+            pub roots: RootSet,
+            pub stems: StemSet
+        }
+
+        // A struct's fields, even private fields, are accessible throughout the module where the struct is declared. Outside the module, only public fields are accessible.
+
+        // A single module can define several types that work closely together, such as perhaps frond::LeafMap and frond::LeafMapIter, accessing each other's private fields as needed, while still hiding those implementation details from the rest of our program.
+
+    // Type aliases
+        // As we've seen, the type keyword can be used like typedef in C++, to declare a new name for an existing type:
+        type Table = HashMap<String, Vec<String>>;
+
+        // The type Table that we're declaring here is shorthand for this particular kind of HashMap.
+        fn show(table: &Table) {
+            ...
+        }
+
+    // impl blocks
+        // Methods are attached to types using impl blocks:
+        impl Cell {
+            pub fn distance_from_origin(&self) -> f64 {
+                f64::hypot(self.x, self.y)
+            }
+        }
+
+        // The syntax is covered in chapt 9. An impl block can't be marked pub. Instead, individual methods are marked pub to make them visible outside the current module.
+
+        // Private methods, like private struct fields, are visible thoughout the module where they're declared.
     
+    // Constants
+        // The const keyword introduces a constant. The syntax is just like let except that it may be marked pub, and the type is required. Also, UPPERCASE_NAMES are conventional for constants:
+        pub const ROOM_TEMPERATURE: f64 = 20.0; // degrees Celsius
+
+        // The static keyword introduces a static item, which is nearly the same thing:
+        pub static ROOM_TEMPERATURE: f64 = 68.0; // degrees Fahrenheit
+
+        // A constant is a bit like a C++ #define. The value is compiled into our code every place it's used. A static is a variable that's set up before our program starts running and lasts until it exists. Use constant for magic numbers and string in our code. Use statics for larger amounts of data, or any time we'll need to borrow a ref to the constant value.
+
+        // There are no mut constants. Statics can be marked mut, but as discussed in chapt 5, Rust has no way to enforce its rules about exclusive access on mut statics. They are, therefore, inherently non-thread-safe, and safe code can't use them at all:
+        static mut PACKETS_SERVED: usize = 0;
+
+        println!("{} served", PACKETS_SERVED); // error: use of mutable static
+
+        // Rust discourages global mutable state. For a discussion of the alternatives, see "Global Variables" in chapt 19.
+
+    // Modules
+        // We've already covered this in details. As we've seen, a module can contain submodules, which can be public or private, like any other named item.
+
+    // Imports
+        // Use and extern crate declarations are items too. Even though tey're just aliases, they can by public:
+        // in plant_structures/mods.rs
+        ...
+        pub use self::leaves::Leaf;
+        pub use self::roots::Root;
+
+        // This means that Leaf and Root are public items of the plant_structures module. They're still simple aliases for plant_structures::leaves::Leaf and plant_structures::roots:Root.
+        // The standard prelude is written as just as a series of pub imports.
+        
+    // extern blocks
+        // These declare a collection of functions written in some other language (typically C or C++), so that our Rust code can call them. These are covered in Chapt 21.
+
+        // Rust warns about items that are declared, but never used:
+        // warning: function is never used: `is_square`
+        // --> src/crates_unused_items.rs...
+
+        // This warning can be puzzling, because there are two very different possible causes. Perhaps this function really is dead code at the moment. Or, maybe, you meant to use it in other crates. In that case, we'd need to mark it and all enclosing modules as public.
+
+
+
+    
+
 
 
 }
