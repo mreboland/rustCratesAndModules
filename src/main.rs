@@ -438,4 +438,66 @@ fn main() {
 
 
 
+    // Attributes
+
+    // Any item in a Rust program can be decorated with attributes. Attributes are Rust's catch-all syntax for writing misc instructions and advice to the compiler. For example, suppose we get this warning:
+    // libgit2.rs: warning: type `git_revspec` should have a camel case name
+        // such as `GitRevspec`, #[warn(non_camel_case_types)] on by default
+
+    // But we chose this name for a reason, and you wish Rust would shut up about it. We can disable the warning by adding an #[allow] attribute on the type:
+    #[allow(non_camel_case_types)]
+    pub struct git_revspec {
+        ...
+    }
+
+    // Conditional compilation is another feature that's writing using an attribute, the #[cfg] attribute:
+    // Only include this module in the project if we're building for Android
+    // #[cfg(target_os = "android")]
+    // mod mobile;
+
+    // The full syntax of #[cfg] is specified in the Rust Reference. See page 280-281 for the most commonly used options.
+
+    // Occasionally, we need to micromanage the inline expansion of functions, an optimization that we're usually happy to leave to the compiler. We can use the #[inline] attribute for that:
+    /// Adjust levels of ions etc. in two adjacent cells
+    /// due to osmosis between them
+    #[inline]
+    fn do_osmosis(c1: &mut Cell, c2: &mut Cell) {
+        ...
+    }
+
+    // There's one situation where inlining won't happen without #[inline]. When a function or method defined in one crate is called in another crate, Rust won't inline it unless it's generic (it has type parameters) or it's explicitly marked #[inline].
+
+    // Otherwise, the compiler treats #[inline] as a suggestion. Rust also supports the more insistent #[inline(always)], to request that a function be expanded inline at every call site, and #[inline(never)], to ask that a function never be inlined.
+
+    // Some attributes, like #[cfg] and #[allow], can be attached to a whole module and apply to everything in it. Others, like #[test] and #[inline], must be attached to individual items. Each attribute is custom-made and has its own set of supported arguments. Use the Rust Reference docs to see the full set of supported attributes.
+
+    // To attach an attribute to a whole crate, add it at the top of the main.rs or lib.rs file, before any items, and write #! instead of #, like so:
+    // libgit2_sys/lib.rs
+    #![allow(non_camel_case_types)]
+
+    pub struct git_revspec {
+        ...
+    }
+
+    pub struct git_error {
+        ...
+    }
+
+    // The #! tells Rust to attach an attribute to the enclosing item rather than whatever comes next. In this case, the #![allow] attribute attaches to the whole libgit2_sys crate, not just the struct git_revspec.
+
+    // #! can also be used inside functions, structs, and so on, but it's only typically used at the beginning of a file, to attach an attribute to the whole module or crate. Some attributes always use the #! syntax because they can only be applied to a whole crate.
+
+    // For example, the #![feature] attribute is used to turn on unstable features of the Rust language and libraries, features that are experimental, and therefore might have bugs or might be changed or removed in the future. For instance, as of writing, Rust has experimental support for 128-bit integer types i128 and u128. But since these types are experimental, we can only use them by 1. installing the Nightly version of Rust, and 2. explicitly declaring that our crate uses them:
+    #![feature(i128_type)]
+
+    fn main() {
+        // Do my math homework, Rust!
+        println!("{}", 9204093811595833589_u128 * 19973810893143440503_u128);
+    }
+
+    // Over time, the Rust team sometimes stabilizes an experimental feature, so that it becomes a standard part of the language. The #![feature] attribute then becomes superfluous, and Rust generates a warning advising us to remove it.
+
+
+
+
 }
