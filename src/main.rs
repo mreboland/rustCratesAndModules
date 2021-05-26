@@ -111,5 +111,54 @@ fn main() {
 
 
 
+    // Modules in Separate Files
+
+    // A module can also be written like this:
+    mod spores;
+
+    // Earlier, we included the body of the spores module, wrapped in curly braces. Here, we're instead telling the Rust compiler that the spores module lives in a separate file, called spores.rs:
+    // spores.rs
+
+    /// A cell made by an adult fern...
+    pub struct Spore {
+        ...
+    }
+
+    /// Simulate the production of a spore by meiosis.
+    pub fn produce_spore(factory: &mut Sporangium) -> Spore {
+        ...
+    }
+
+    /// Mix genes to prepare for meiosis (part of interphase).
+    fn recombine(parent: &mut Cell) {
+        ...
+    }
+
+    // spores.rs contains only the items that make up the module. It doesn't need any kind of boilerplate to declare that it's a module.
+
+    // The location of the code is the only difference between this spores module and the version showed in the previous section (using the same code). The rules about what's public and what's private are exactly the same. Rust also never compiles modules separately, even if they're in separate files. When we build a Rust crate, we're recompiling all of its modules.
+
+    // A module can have its own directory. When Rust sees mod spores, it checks for both spores.rs and spores/mod.rs. If neither files exists, or both exist, that's an error. For this example, we used spores.rs, because the spores module did not have any submodules. But consider the plant_structures module written out earlier. If we decide to split that module and its three submodules into their own files, the resulting project would look like this:
+    // fern_sim/
+        // Cargo.toml
+        // src/
+            // main.rs
+            // spores.rs
+            // plant_structures/
+                // mod.rs
+                // leaves.rs
+                // roots.rs
+                // stems.rs
+    
+    // In main.rs, we declare the plant_structures module:L
+    pub mod plant_structures;
+
+    // This causes Rust to load plant_structures/mod.rs, which declares the three submodules:
+    // In plant_structures/mods.rs
+    pub mod roots;
+    pub mod stems;
+    pub mod leaves;
+
+    // The content of those three modules are stored in separate files names leaves.rs, roots.rs, and stems.rs, located alongside mod.rs in the plant_structures directory.
     
 }
