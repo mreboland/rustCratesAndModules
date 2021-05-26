@@ -404,7 +404,37 @@ fn main() {
 
 
 
-    
+    // The src/bin Directory
+
+    // Getting the original command-line fern_sim program working again is also straightforward. Cargo has some built-in support for small programs that live in the same codebase as a library.
+
+    // In fact, Cargo itself is written this way. The bulk of the code is in a Rust library. The cargo command-line program that we've been using throughout the book is a thin wrapper program that calls out to the library for all the heavy lifting. Both the library and the command-line program live in the same source repository.
+
+    // We can put our program and ou library in the same codebase, too. Put this code into a file named src/bin/efern.rs:
+    extern crate fern_sim;
+    use fern_sim::{Fern, run_simulation};
+
+    fn main() {
+        let mut fern = Fern {
+            size: 1.0,
+            growth_rate: 0.001
+        };
+
+        run_simulation(&mut fern, 1000);
+        println!("final fern size: {}", fern.size);
+    }
+
+    // The main function is the one we set aside earlier. We've added an extern crate declaration, since this program will use the fern_sim library crate, and we're importing Fern and run_simulation from the library.
+
+    // Because we've put this file into src/bin, Cargo will compile both the fern_sim library and this program the next time we run cargo build. We can run the fern program using cargo run --bin efern.
+
+    // We still didn't make any changes to Cargo.toml, because again, Cargo's default is to look at our source files and figure things out. It automatically treats .rs files in src/bin as extra programs to build.
+
+    // Now that fern_sim is a library, we also have another option. We could have put this program in its own isolated project, in a completely separate directory, with its own Cargo.toml listing fern_sim as a dependency:
+    [dependencies]
+    fern_sim = { path = "../fern_sim"}
+
+    // Perhaps that is what we'll do for other fern-simulating programs down the road. The src/bin directory is just right for a simple program like efern.
 
 
 
