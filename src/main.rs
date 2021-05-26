@@ -233,6 +233,23 @@ fn main() {
 
 
 
+    // The Standard Prelude
+
+    // Previously we said each module starts with a "blank slate", as far as imported names are concerned. But the slate is not completely blank.
+
+    // For one thing, the standard library std is automatically linked with every project. It's as though our lib.rs or main.rs contained an invisible declaration for it:
+    extern crate std;
+
+    // Furthermore, a few particularly handy names, like Vec and Result, are included in the standard prelude and automatically imported. Rust behaves as though every module, including the root module, started with the following import:
+    use std::prelude::v1::*;
+
+    // The standard prelude contains a few dozen commonly used traits and types. It does not contain std. So if our module refers to std, we'll have to import it explicitly, like so:
+    use std;
+
+    // Usually, it makes more sense to import the particular feature of std that we're using. In chapt 2, we mentioned that libraries sometimes provide modules names prelude. But std::prelude::v1 is the only prelude that is ever imported automatically. Naming a module prelude is just a convention that tells users it's meant to be imported using *.
+
+
+
     
 
 
