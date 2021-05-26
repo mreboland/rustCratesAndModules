@@ -160,5 +160,80 @@ fn main() {
     pub mod leaves;
 
     // The content of those three modules are stored in separate files names leaves.rs, roots.rs, and stems.rs, located alongside mod.rs in the plant_structures directory.
+
+
+
+    // Paths and Imports
+
+    // The :: operator is used to access features of a module. Code anywhere in our project can refer to any standard library feature by writing out its absolute path:
+    if s1 > s2 {
+        ::std::mem::swap(&mut s1, &mut s2);
+    }
+
+    // This function name, ::std::mem::swap, is an absolute path, because it starts with a double colon. The path ::std refers to the top-level module of the standard library. ::std::mem is a submodule within the standard library, and ::std::mem::swap is a public function in that module.
+
+    // We could write all our code this way, spelling out ::std::f64::consts::Pl and ::std::collections::HashMap::new every time we want a circle or a dictionary, but it would be tedious to type and hard to read. The alternative is to import features into the modules where they're used:
+    use std::mem;
+
+    if s1 > s2 {
+        mem::swap(&mut s1, &mut s2);
+    }
+
+    // The use declaration causes the name mem to be a local alias for ::std::mem throughout the enclosing block or module. Paths in use declarations are automatically absolute paths, so there is no need for a leading ::.
+
+    // We could write use std::mem::swap to import the swap function itself instead of the mem module. However, what we did above is generally considered the best style. Import types, traits, and modules (like std::mem), then use relative paths to access the functions, constants, and other members within.
+
+    // Several names can be imported at once:
+    use std::collections::{HashMap, HashSet}; // import both
+    use std::io::prelude::*; // import everything
+
+    // The above is shorthand for writing our all the individual imports:
+    use std::collections::HashMap;
+    use std::collections::HashSet;
+
+    // all the public items in std::io::prelude
+    use std::io::prelude::Read;
+    use std::io::prelude::Write;
+    use std::io::prelude::BufRead;
+    use std::io::prelude::Seek;
+
+    // Modules do not automatically inherit names from their parent modules. For example, suppose we have this in our proteins/mods.rs:
+    // proteins/mods.rs
+    pub enum AminoAcid { ... }
+    pub mod synthesis;
+
+    // The code in synthesis.rs does not automatically see the type AminoAcid:
+    // proteins/synthesis.rs
+    pub fn synthesize(seq: &[AminoAcid]) // error: can't find type `AminoAcid`
+    ...
+
+    // Instead, each module starts with a blank slate and must import the names it uses:
+    // proteins/synthesis.rs
+    use super::AminoAcid; // explicitly import from parent
+
+    pub fn synthesize(seq: &[AminoAcid]) // ok
+
+    // The keyword super has a special meaning in imports. It's an alias for the parent module. Similarly, self is an alias for the current module.
+    // In proteins/mod.rs
+
+    // import from a submodule
+    use self::synthesis::synthesize;
+
+    // import names from an enum,
+    // so we can write `Lys` for lysine, rather than `AminoAcid::Lys`
+    use self::AminoAcid::*;
+
+    // While paths in imports are treated as absolute paths by default, self and super let us override that and import from relative paths.
+
+    // The AminoAcid example here breaks the style rule mentioned earlier about only importing types, traits, and modules. It can be broken if the naming gets extremely long (think DNA scientific name).
+
+    // Submodules can access private items in their parent modules, but they have to import each one by name. Using super::* only imports items that are marked pub.
+
+    // Modules aren't the same thing as files, but there is a natural analogy between modules and the files and directories of a Unix filesystem. The use keyword creates aliases, just as the In Command creates links. Paths, like filenames, come in absolute and relative forms. self and super are like the . and .. special directories. And extern crate grafts anther crate's root module into our project. It's a lot like mounting a filesystem.
+
+
+
     
+
+
 }
