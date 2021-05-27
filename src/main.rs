@@ -499,5 +499,67 @@ fn main() {
 
 
 
+    // Tests and Documentation
+
+    // Rust has a simple unit testing framework built in. Tests are ordinary functions marked with the #[test] attribute.
+    #[test]
+    fn math_works() {
+        let x: i32 = 1;
+        assert!(x.is_positive());
+        assert_eq!(x + 1, 2);
+    }
+
+    // Running cargo test runs all the tests in our project.
+
+    // This works the same whether our crate is an exe or library. We can run specific tests by passing arguments to Cargo. cargo test math runs all tests that contain math somewhere in their name.
+
+    // The assert macros are commonly used. assert!(expr) succeeds if expr is true, otherwise it panics causing a fail. assert_eq!(v1, v2) is just like assert! (v1 == v2) except that if the assertion fails, the error message shows both values.
+    // We can use the above macros in ordinary code, to check invariants, however they are included in release builds. Use debug_assert! and debug_assert_eq! instead to write assertions that are checked only in debug builds.
+
+    // To test error cases, add the #[should_panic] attribute to our test:
+    /// This test passes only if division by zero causes a panic
+    /// as we claimed in the previous chapter.
+    #[test]
+    #[should_panic(expected="divide by zero")]
+    fn test_divide_by_zero_error() {
+        1 / 0; // should panic?
+    }
+
+    // Functions marked with #[test] are conditionally compile. When we run cargo test, Cargo builds a copy of our program with our tests and the test harness enable. A plain cargo build or cargo build --release skips the testing code. This means our unit tests can live right alongside the code they test, accessing internal implementation details if they need to, and yet there's no runtime cost. However, it can result in some warnings. For example:
+    fn roughly_equal(a: f64, b: f64) -> bool {
+        (a -b).abs() < 1e-6
+    }
+
+    #[test]
+    fn trig_works() {
+        use std::f64::consts::Pl;
+        assert!(roughly_equal(Pl.sin(), 0.0));
+    }
+
+    // In a testing build, this is fine. In a nontesting build, roughly_equal is unused, and Rust will complain:
+    // Warning: function is never used: `roughly_equal` ...
+
+    // Convention, when our tests get substantial enough to require support code, is to put them in a tests module and declare the whole module to be testing-only using the #[cfg] attribute:
+    #[cfg(test)] // include this module only when testing
+    mod tests {
+        fn roughly_equal(a: f64, b: f64) -> bool {
+            (a - b).abs() < 1e-6
+        }
+
+        #[test]
+        fn trig_works() {
+            use std::f64::consts::Pl;
+            assert!(roughly_equal(Pl.sin(), 0.0));
+        }
+    }
+
+    // Rust's test harness uses multiple threads to run several tests at a time, a nice side benefit of our Rust code being thread-safe by default. We can disable this, we can either run a single test, cargo test testname, or set the environment variable RUST_TEST_THREADS to 1.
+
+
+
+    
+
+
+
 
 }
