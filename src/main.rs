@@ -725,4 +725,30 @@ fn main() {
 
     // Having this level of control over our dependencies is powerful. If we ever decide that any of the open source crates being used isn't exactly to our liking, we can trivially for it. Hit the Fork button on GitHub and change one line in our Cargo.toml file. Our next cargo build will seamlessly use our fork of the crate instead of the official version.
 
+
+
+    // Versions
+
+    // When we write something like image = "0.6.1" in our Cargo.toml file, Cargo interprets this rather loosely. It uses the most recent version of image that is considered compatible with version 0.6.1.
+
+    // The compatibility rules are adapted from Semantic Versioning.
+    // 1. A version number starts with 0.0 is so raw that Cargo never assumes it's compatible with any other version.
+    // 2. A version number that starts with 0.x, where x is nonzero, is considered compatible with other point releases in the 0.x series. We specified image version 0.6.1, but Cargo would use 0.6.3 if available.
+    // 3. Once a project reaches 1.0, only new major versions break compatibility. So if we ask for version 2.0.1, Cargo might use 2.17.99 instead, but not 3.0.
+
+    // Version numbers are flexible by default because otherwise the problem of which version to use would quickly become over constrained. Supposed one library, A, used num = "0.1.31", while B used num = "0.1.29". If versions required exact matches, no project would be able to use those two libraries together. Allowing Cargo to use any compatible version is a much more practical default.
+
+    // We can specify an exact version or range of version by using operators:
+    // Cargo.toml line             Meaning
+    // image = "=0.10.0"           Use only the exact version 0.10.0
+    // image = ">=1.0.5"           Use 1.0.5 or any higher version (even 2.9, if it’s available)
+    // image = ">1.0.5 <1.1.9"     Use a version that’s higher than 1.0.5, but lower than 1.1.9
+    // image = "<=2.7.10"          Use any version up to 2.7.10
+
+    // Another version specification we'll occasionally see is the wildcard *. This tells Cargo that any version will do. Unless some other Cargo.toml file contains a more specific constraint, Cargo will use the latest available version.
+
+    // The compatibility rules mean that version numbers can't be chosen purely for marketing reasons. They actually mean something. They're a contract between a crate's maintainers and its users. If we maintain a crate that's at version 1.7, an we decide to remove a function or make any other change that isn't fully backward compatible, we must bump our version number to 2.0. Calling it 1.8 would be claiming it works with 1.7 when it doesn't, and our users will have broken builds.
+
+    
+
 }
