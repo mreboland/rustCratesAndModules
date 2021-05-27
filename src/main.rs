@@ -817,5 +817,38 @@ fn main() {
     
 
 
+    // Workspaces
+
+    // As our project continues to grow, we end up writing many crates. They live side by side in a single source repo:
+    fernsoft/
+    ├── .git/...
+    ├── fern_sim/
+    │ ├── Cargo.toml
+    │ ├── Cargo.lock
+    │ ├── src/...
+    │ └── target/...
+    ├── fern_img/
+    │ ├── Cargo.toml
+    │ ├── Cargo.lock
+    │ ├── src/...
+    │ └── target/...
+    └── fern_video/
+      ├── Cargo.toml
+      ├── Cargo.lock
+      ├── src/...
+      └── target/...
+
+    // The way Cargo works, each crate has its own build directory, target which contains a separate build of all that crate's dependencies. These build directories are completely independent. Even if two crates have a common dependency, they can't share any compile code. This is wasteful.
+
+    // We can save compilation time and disk space by using a Cargo workspace, a collection of crates that share a common build directory and Cargo.lock file.
+
+    // All we need to do is create a Cargo.toml file in our repo's root directory and put these lines in:
+    [workspace]
+    members = ["fern_sim", "fern_img", "fern_video"]
+
+    // Where fern_sim etc. are the names of the subdirectories containing our crates. Delete any leftover Cargo.lock files and target directories that exist in those subdirectories.
+
+    // Once done, cargo build in any crate will automatically create and use a shared build directory under the root directory (in this case, fernsoft/target). The command cargo build --all builds all crates in the current workspace. cargo test and cargo doc accept the --all option as well.
+
 
 }
