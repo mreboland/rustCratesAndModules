@@ -583,7 +583,47 @@ fn main() {
 
 
 
-    
+    // Documentation
+
+    // The command cargo doc creates HTML documentation for out library:
+    // cargo doc -no-deps --open
+    // Documenting fern_sim v0.1.0 (file:/// ...//fern_sim)
+
+    // The --no-deps option tells Cargo to generate documentation only for fern_sim itself, and not for all the crates it depends on.
+
+    // The --open option tells Cargo to open the documentation in our browser afterwards.
+
+    // See page 288 for diagram. Cargo saves the new documentation files in target/doc. The starting page is target/doc/fern_sim/index.html.
+
+    // The documentation is generated from the pub features of our library, plus any doc comments we've attached to them. We've seen a few doc comments in this chapter. They start with the /// tag which Rust treats as a #[doc] attribute. We could technically write it out as #[doc = "Simulate the production...."] which works out to be the same.
+
+    // When we compile or test a library, these attributes are ignored. When we generate documentation, doc comments on public features are included in the output.
+
+    // Likewise, comments starting with //! are treated as #![doc] attributes, and are attached to the enclosing feature, typically a module or crate. For example, our fern_sim/src/lib.rs file might begin like so:
+    //! Simulate the growth...
+    //! individual cells on up.
+
+    // The content of a doc comment is treated ar Markdown, a shorthand notation for simple HTML formatting. Asterisks are used for *italics* and **bold type**, a blank line is treated as a paragraph break, and so on. However, we can also fall back on HTML. Any HTML tags in our doc comments are copied through verbatim into the documentation.
+
+    // We can use `backticks` to set off bits of code in the middle of running text. In the output, these snippets will be formatted in a fixed-width font. Larger code samples can be added by indenting four spaces.
+
+    /// A block of code in a doc comment
+    ///
+    ///    if everything().works() {
+    ///         println!("ok");
+    ///}     
+
+    // We can also use Markdown fenced code blocks. This has the same effect.
+
+    /// Another snippet, same code written differently
+    ///
+    /// ```
+    /// if everything().works() {
+    ///     println!("ok");
+    ///}
+    /// ```
+
+    // Whichever format we use, an interesting thing happens when we include a block of code in a doc comment. Rust automatically turns it into a test.
 
 
 
