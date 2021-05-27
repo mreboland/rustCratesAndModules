@@ -749,6 +749,26 @@ fn main() {
 
     // The compatibility rules mean that version numbers can't be chosen purely for marketing reasons. They actually mean something. They're a contract between a crate's maintainers and its users. If we maintain a crate that's at version 1.7, an we decide to remove a function or make any other change that isn't fully backward compatible, we must bump our version number to 2.0. Calling it 1.8 would be claiming it works with 1.7 when it doesn't, and our users will have broken builds.
 
+
+
+    // Cargo.lock
+
+    // The version numbers in Cargo.toml are deliberately flexible, yet we don't want Cargo to upgrade us to the latest library versions every time we build. A cargo build that upgrades us to a new version of a library could have bad consequences say, during debugging which we do not want any changes being made. The unexpected change could cause more bugs.
+
+    // Cargo has a built-in mechanism to prevent this. The first time we build a project, Cargo outputs a Cargo.lock file that records the exact version of every crate it used. Later builds will consult this file and continue to use the same versions. Cargo upgrades to newer versions only when we tell it to. Either by manually bumping up the version number in our Cargo.toml file, or by running cargo update.
+
+    // cargo update only upgrades to the latest version that are compatible with what we've specified in Cargo.toml. If we have vers "0.6.1" and want "0.10.0" we'd have to manually change that in Cargo.toml. The next time we build, Cargo will update to the new version.
+
+    // Something similar happens for dependencies that are stored in Git. Suppose our Cargo.toml file contains:
+    image = { git = "https://github.com/Piston/image.git", branch = "master" }
+
+    // cargo build will not pull new changes from the Git repo if it sees that we've got a Cargo.lock file. Instead, it eads Cargo.lock and uses the same revision as last time. But cargo update will pull from master, so that our next build uses the latest revision.
+
+    // Cargo.lock is auto generated for us, and we'd normally not edit it by hand. If our project is an exe, we should commit Cargo.lock to version control. That way, everyone who builds our project will consistently get the same versions. The history of our Cargo.lock file will record our dependency updates.
+
+    // If our project is an ordinary Rust library, don't bother committing Cargo.lock. Downstream users will have Cargo.lock files that contain version info for their entire dependency graph. They will ignore our library's Cargo.lock file. In the rare case that our project is a shared library (i.e., the ouput is a .dll, .dylib, or .so file), there is no such downstream cargo user, and we should therefore commit Cargo.lock
     
+
+
 
 }
