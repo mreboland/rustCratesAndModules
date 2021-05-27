@@ -557,6 +557,32 @@ fn main() {
 
 
 
+    // Integration Tests
+
+    // Our fern simulator continues to grow. We've decided to put all the major functionality into a library that can be used by multiple executables. It would be nice to have some tests that link with the library the way an end user would, using fern_sim.rlib as an external crate. Also, we have some tests that start by loading a saved simulation from a binary file, and it is awkward having those large test files in our src directory. Integration tests help with these two problems.
+
+    // Integration tests are .rs files that live in a tests directory alongside our project's src directory. When we run cargo test, Cargo compile each integration test as a separate, standalone crate, linked with our library and the Rust test harness. Example:
+    // tests/unfurl.rs - Fiddleheads unfurl in sunlight
+
+    extern crate fern_sim;
+    use fern_sim::Terrarium;
+    use std::time::Duration;
+
+    #[test]
+    fn test_fiddlehead_unfurling() {
+        let mut world = Terrarium::load("tests/unfurl_files/fiddlehead.tm");
+        assert!(world.fern(0).is_furled());
+        let one_hour = Duration::from_secs(60 * 60);
+        world.apply_sunlight(one_hour);
+        assert!(world.fern(0).is_fully_unfurled());
+    }
+
+    // The integration test includes an extern crate declaration since it uses fern_sim as a library. The point of integration tests is that they see our crate from the outside, just as a user would. They test the crate's public API.
+
+    // cargo test runs both unit tests and integration tests. To run only the integration tests in a particular file, for example, tests/unfurl.rs, use the command cargo test --test unfurl.
+
+
+
     
 
 
