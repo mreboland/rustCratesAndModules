@@ -767,6 +767,53 @@ fn main() {
     // Cargo.lock is auto generated for us, and we'd normally not edit it by hand. If our project is an exe, we should commit Cargo.lock to version control. That way, everyone who builds our project will consistently get the same versions. The history of our Cargo.lock file will record our dependency updates.
 
     // If our project is an ordinary Rust library, don't bother committing Cargo.lock. Downstream users will have Cargo.lock files that contain version info for their entire dependency graph. They will ignore our library's Cargo.lock file. In the rare case that our project is a shared library (i.e., the ouput is a .dll, .dylib, or .so file), there is no such downstream cargo user, and we should therefore commit Cargo.lock
+
+
+
+    // Publishing Crates to crates.io
+
+    // We've decided to publish our fern-simulating library as open source software. Congrats! This part is easy.
+
+    // First, make sure Cargo can pack the crate for us:
+    // cargo package
+
+    // The cargo package command creates a file containing all our library's source files, including Cargo.toml. This is the file that we'll upload to crates.io to share with the world (we can use cargo package --list to see which files are included). Cargo then double-checks its work by building our library from the .crate file, just as our eventual users will.
+
+    // Cargo warns that the [package] section of Cargo.toml is missing some info that will be important to downstream users, such as the license under which we're distributing the code. The URL in the warning is an excellent resource, so we won't explain all the fields in detail. In short, we can fix the warnings by adding a few lines to Cargo.toml:
+    [package]
+    name = "fern_sim"
+    version = "0.1.0"
+    authors = ["You <you@example.com>"]
+    license = "MIT"
+    homepage = "https://fernsim.example.com/"
+    repository = "https://gitlair.com/sporeador/fern_sim"
+    documentation = "http://fernsim.example.com/docs"
+    description = """
+    Fern simulation, from the cellular level up.
+    """
+
+    // Of note, everyone who downloads our crate from crate.io can see the Cargo.toml. Leave personally info out of it.
+
+    // another problem that sometimes arises at this stage is that our Cargo.toml file might be specifying the location of other crates by path:
+    image = { path = "vendor/image" }
+
+    // This may work fine for local production, but when others download it, they won't have the same files and directories we do. Cargo therefore ignores the path key in automatically downloaded libraries. This can cause build errors. The fix is straightforward. If our library is going to be published on crates.io, its dependencies should be on crates.io too. Specify a version number instead of a pth:
+    image = "0.6.1"
+
+    // If preferred, we can specify both a path, which takes precedence for our own local builds, and a version for all other users:
+    image = { path = "vendor/image", version = "0.6.1"}
+
+    // If we got the above route of both ways, it's now our responsibility that the two stay in sync.
+
+    // Lastly, before publishing a crate, we'll need to log in to crates.io and get an API key. This step is straightforward. Once we have an account on crates.io, our "Account Settings" page will show a cargo login command, like:
+    cargo login 5j0dV54BjlXBpUUbfIj7G9DvNl1vsWW1
+
+    // Cargo saves the key in a config file, and the API key should be kept secret, like a password. So run this command only on a computer we control.
+
+    // That done, the final step is to run cargo publish:
+    // cargo publish
+
+    // With this, our library joins thousands of others on crates.io.
     
 
 
