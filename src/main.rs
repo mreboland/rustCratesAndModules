@@ -704,4 +704,25 @@ fn main() {
 
     // If the code isn't even expected to compile, use ignore instead of no_run. If the code block isn't Rust code at all, use the name of the language, like c++ or sh, or text for plain text. Rustdoc treats any annotation it doesn't recognize as indicating that the code block isn't Rust. This disables code highlighting as well as doc-testing.
 
+
+
+    // Specifying Dependencies
+
+    // We've seen one way of telling Cargo where to get source code for crates our project depends on. By version number.
+    image = "0.6.1"
+
+    // There are several ways to specify dependencies, and some rather nuanced things we might want to say about which versions to use.
+
+    // We may want to use dependencies that aren't published on crates.io at all. One way to do this is by specifying a Git repo URL and revision:
+    image = { git = "https://github.com/piston/image.git", rev = "528f19c" }
+
+    // This particular crate is open source, hosted on Github, but we could just as easily point to a private Git repo hosted on our corporate network. We can specify the particular rev, tag, or branch to use.
+
+    // Another alternative is to specify a directory that contains the crate's source code:
+    image = { path = "vendor/image" }
+
+    // This is convenient when our team has a single version control repo that contains source code for several crates, or perhaps the entire dependency graph. Each crate can specify its dependencies using relative paths.
+
+    // Having this level of control over our dependencies is powerful. If we ever decide that any of the open source crates being used isn't exactly to our liking, we can trivially for it. Hit the Fork button on GitHub and change one line in our Cargo.toml file. Our next cargo build will seamlessly use our fork of the crate instead of the official version.
+
 }
